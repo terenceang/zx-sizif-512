@@ -41,7 +41,7 @@ set_global_assignment -name DEVICE EPM1270T144C5
 set_global_assignment -name TOP_LEVEL_ENTITY zx_ula
 set_global_assignment -name ORIGINAL_QUARTUS_VERSION "13.0 SP1"
 set_global_assignment -name PROJECT_CREATION_TIME_DATE "12:23:37  FEBRUARY 02, 2021"
-set_global_assignment -name LAST_QUARTUS_VERSION "13.0 SP1"
+set_global_assignment -name LAST_QUARTUS_VERSION "20.1.1 Lite Edition"
 set_global_assignment -name USE_GENERATED_PHYSICAL_CONSTRAINTS OFF -section_id eda_blast_fpga
 set_global_assignment -name MAX7000_DEVICE_IO_STANDARD "3.3-V LVTTL"
 set_global_assignment -name VERILOG_INPUT_VERSION SYSTEMVERILOG_2005
@@ -93,6 +93,7 @@ set_location_assignment PIN_14 -to kd[3]
 set_location_assignment PIN_15 -to kd[2]
 set_location_assignment PIN_16 -to kd[1]
 set_location_assignment PIN_18 -to kd[0]
+set_location_assignment PIN_21 -to spk
 set_location_assignment PIN_22 -to bus0
 set_location_assignment PIN_23 -to bus1
 set_location_assignment PIN_24 -to n_romcs

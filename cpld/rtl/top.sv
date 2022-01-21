@@ -74,7 +74,8 @@ module zx_ula (
     input ps2_dat,
 
     output bus0,
-    input bus1
+    input bus1,
+    output spk
 `endif
 );
 
@@ -353,6 +354,7 @@ magic magic0(
     .ay_en(ay_en),
     .covox_en(covox_en),
     .soundrive_en(soundrive_en),
+    .spk(spk),
     .sd_indication_en(sd_indication_en),
     .bright_boost(bright_boost)
 );

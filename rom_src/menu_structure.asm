@@ -40,6 +40,7 @@ menudefault: MENU_DEF 20
     MENUENTRY_T str_sd          menu_sd_value_cb          menu_sd_cb
     MENUENTRY_T str_ulaplus     menu_ulaplus_value_cb     menu_ulaplus_cb
     MENUENTRY_T str_dac         menu_dac_value_cb         menu_dac_cb
+    MENUENTRY_T str_spk         menu_spk_value_cb         menu_spk_cb
     MENUENTRY_T str_menuadv     0                         menu_menuadv_cb
     MENUENTRY_T str_exit        menu_exit_value_cb        menu_exit_cb
     MENUENTRY_T 0
@@ -57,6 +58,7 @@ menuext: MENU_DEF 20
     MENUENTRY_T str_tsfm        menu_tsfm_value_cb        menu_tsfm_cb
     MENUENTRY_T str_saa         menu_saa_value_cb         menu_saa_cb
     MENUENTRY_T str_gs          menu_gs_value_cb          menu_gs_cb
+     MENUENTRY_T str_spk         menu_spk_value_cb         menu_spk_cb
     MENUENTRY_T str_menuadv     0                         menu_menuadv_cb
     MENUENTRY_T str_exit        menu_exit_value_cb        menu_exit_cb
     MENUENTRY_T 0
@@ -168,6 +170,14 @@ menu_dac_value_cb:
     DW str_dac_covox_end-2
     DW str_dac_sd_end-2
     DW str_dac_covoxsd_end-2
+
+menu_spk_value_cb:
+    ld ix, .values_table
+    ld a, (cfg.spk)
+    jp menu_value_get
+.values_table:
+    DW str_off_end-2
+    DW str_on_end-2
 
 menu_tsfm_value_cb:
     ld ix, .values_table
@@ -321,6 +331,15 @@ menu_dac_cb:
     call menu_handle_press
     ld (cfg.dac), a
     ld bc, #0bff
+    out (c), a
+    ret
+
+menu_spk_cb:
+    ld a, (cfg.spk)
+    ld c, 1
+    call menu_handle_press
+    ld (cfg.spk), a
+    ld bc, #0cff
     out (c), a
     ret
 

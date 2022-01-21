@@ -1,14 +1,8 @@
     DB 0
 
-    IFDEF SIZIFXXS
-str_sizif: DB "SIZIF-XXS",0
-str_sizif_end:
-    ENDIF
 
-    IFDEF SIZIF512
-str_sizif: DB "SIZIF-512",0
+str_sizif: DB "ZX Spectrum",0
 str_sizif_end:
-    ENDIF
 
 str_pause DB " PAUSE ",0
 str_pause_end:
@@ -123,6 +117,9 @@ str_dac_sd_end
 
 str_dac_covoxsd: DB "Covox+SD",0
 str_dac_covoxsd_end
+
+str_spk: DB "Int Speaker",0
+str_spk_end
 
 str_tsfm: DB "TSFM+MIDI",0
 str_tsfm_end
