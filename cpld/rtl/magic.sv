@@ -141,9 +141,9 @@ always @(posedge clk28 or negedge rst_n) begin
         8'h09: {zc_en, divmmc_en} <= bus.d[1:0];
         8'h0A: ulaplus_en <= bus.d[0];
         8'h0B: {soundrive_en, covox_en} <= bus.d[1:0];
-        8'h0c: spk <= bus.d[0];   
-        8'h0C: sd_indication_en <= bus.d[0];
-        8'h0D: bright_boost <= bus.d[0];
+        8'h0C: spk <= bus.d[0];   
+        8'h0D: sd_indication_en <= bus.d[0];
+        8'h0E: bright_boost <= bus.d[0];
     endcase
 end
 

@@ -1994,7 +1994,7 @@
  42+  0F75 20 12 00 00
  43+  0F79 4A 18 18 11      MENUENTRY_T str_spk         menu_spk_value_cb         menu_spk_cb
  43+  0F7D 31 12 00 00
- 44+  0F81 6B 18 00 00      MENUENTRY_T str_menuadv     0                         menu_menuadv_cb
+ 44+  0F81 67 18 00 00      MENUENTRY_T str_menuadv     0                         menu_menuadv_cb
  44+  0F85 8B 12 00 00
  45+  0F89 2D 17 50 11      MENUENTRY_T str_exit        menu_exit_value_cb        menu_exit_cb
  45+  0F8D 75 12 00 00
@@ -2029,15 +2029,15 @@
  56+  0FD6 0F 12 00 00
  57+  0FDA 2B 18 06 11      MENUENTRY_T str_dac         menu_dac_value_cb         menu_dac_cb
  57+  0FDE 20 12 00 00
- 58+  0FE2 56 18 26 11      MENUENTRY_T str_tsfm        menu_tsfm_value_cb        menu_tsfm_cb
+ 58+  0FE2 52 18 26 11      MENUENTRY_T str_tsfm        menu_tsfm_value_cb        menu_tsfm_cb
  58+  0FE6 42 12 00 00
- 59+  0FEA 60 18 34 11      MENUENTRY_T str_saa         menu_saa_value_cb         menu_saa_cb
+ 59+  0FEA 5C 18 34 11      MENUENTRY_T str_saa         menu_saa_value_cb         menu_saa_cb
  59+  0FEE 53 12 00 00
- 60+  0FF2 68 18 42 11      MENUENTRY_T str_gs          menu_gs_value_cb          menu_gs_cb
+ 60+  0FF2 64 18 42 11      MENUENTRY_T str_gs          menu_gs_value_cb          menu_gs_cb
  60+  0FF6 64 12 00 00
  61+  0FFA 4A 18 18 11       MENUENTRY_T str_spk         menu_spk_value_cb         menu_spk_cb
  61+  0FFE 31 12 00 00
- 62+  1002 6B 18 00 00      MENUENTRY_T str_menuadv     0                         menu_menuadv_cb
+ 62+  1002 67 18 00 00      MENUENTRY_T str_menuadv     0                         menu_menuadv_cb
  62+  1006 8B 12 00 00
  63+  100A 2D 17 50 11      MENUENTRY_T str_exit        menu_exit_value_cb        menu_exit_cb
  63+  100E 75 12 00 00
@@ -2056,13 +2056,13 @@
  67+  1021 05          >            ( (32-22)/2)
  67+  1022 15          >            (((32-22)/2)+22-6)
  67+  1023             >        }
- 68+  1023 77 18 5E 11      MENUENTRY_T str_sd_indication menu_sdind_value_cb     menu_sdind_cb
+ 68+  1023 73 18 5E 11      MENUENTRY_T str_sd_indication menu_sdind_value_cb     menu_sdind_cb
  68+  1027 92 12 00 00
- 69+  102B 85 18 6C 11      MENUENTRY_T str_bright_boost  menu_bright_value_cb    menu_bright_cb
+ 69+  102B 81 18 6C 11      MENUENTRY_T str_bright_boost  menu_bright_value_cb    menu_bright_cb
  69+  102F A3 12 00 00
- 70+  1033 92 18 7A 11      MENUENTRY_T str_save_settings menu_cfgsave_value_cb   menu_cfgsave_cb
+ 70+  1033 8E 18 7A 11      MENUENTRY_T str_save_settings menu_cfgsave_value_cb   menu_cfgsave_cb
  70+  1037 B4 12 00 00
- 71+  103B AC 18 00 00      MENUENTRY_T str_back          0                       menu_back_cb
+ 71+  103B A8 18 00 00      MENUENTRY_T str_back          0                       menu_back_cb
  71+  103F DD 12 00 00
  72+  1043 00 00 00 00      MENUENTRY_T 0
  72+  1047 00 00 00 00
@@ -2079,14 +2079,14 @@
  75+  1052 08          >            ( (32-16)/2)
  75+  1053 12          >            (((32-16)/2)+16-6)
  75+  1054             >        }
- 76+  1054 B7 18 00 00      MENUENTRY_T str_normal_boot   0                       menu_boot_normal_cb
+ 76+  1054 B3 18 00 00      MENUENTRY_T str_normal_boot   0                       menu_boot_normal_cb
  76+  1058 E6 12 00 00
  77+  105C                  IFNDEF REV_C
- 78+  105C C3 18 00 00      MENUENTRY_T str_zx80          0                       menu_boot_zx80_cb
+ 78+  105C BF 18 00 00      MENUENTRY_T str_zx80          0                       menu_boot_zx80_cb
  78+  1060 F4 12 00 00
- 79+  1064 C8 18 00 00      MENUENTRY_T str_zx81          0                       menu_boot_zx81_cb
+ 79+  1064 C4 18 00 00      MENUENTRY_T str_zx81          0                       menu_boot_zx81_cb
  79+  1068 02 13 00 00
- 80+  106C CD 18 00 00      MENUENTRY_T str_negluk        0                       menu_boot_negluk_cb
+ 80+  106C C9 18 00 00      MENUENTRY_T str_negluk        0                       menu_boot_negluk_cb
  80+  1070 10 13 00 00
  81+  1074                  ENDIF
  82+  1074 00 00 00 00      MENUENTRY_T 0
@@ -2243,8 +2243,8 @@
 232+  117E 3A 3D C0         ld a, (var_flash_error)
 233+  1181 C3 88 11         jp menu_value_get
 234+  1184              .values_table:
-235+  1184 AA 18            DW str_no_error_end-2
-236+  1186 A4 18            DW str_error_end-2
+235+  1184 A6 18            DW str_no_error_end-2
+236+  1186 A0 18            DW str_error_end-2
 237+  1188
 238+  1188
 239+  1188              menu_value_get:
@@ -2404,7 +2404,7 @@
 393+  1295 0E 01            ld c, 1
 394+  1297 CD 1E 13         call menu_handle_press
 395+  129A 32 4B C0         ld (cfg.sdind), a
-396+  129D 01 FF 0C         ld bc, #0cff
+396+  129D 01 FF 0D         ld bc, #0dff
 397+  12A0 ED 79            out (c), a
 398+  12A2 C9               ret
 399+  12A3
@@ -2413,7 +2413,7 @@
 402+  12A6 0E 01            ld c, 1
 403+  12A8 CD 1E 13         call menu_handle_press
 404+  12AB 32 4C C0         ld (cfg.bright), a
-405+  12AE 01 FF 0D         ld bc, #0dff
+405+  12AE 01 FF 0E         ld bc, #0eff
 406+  12B1 ED 79            out (c), a
 407+  12B3 C9               ret
 408+  12B4
@@ -3815,84 +3815,83 @@
 118+  1849 00
 119+  184A              str_dac_covoxsd_end
 120+  184A
-121+  184A 49 6E 74 20  str_spk: DB "Int Speaker",0
-121+  184E 53 70 65 61
-121+  1852 6B 65 72 00
-122+  1856              str_spk_end
-123+  1856
-124+  1856 54 53 46 4D  str_tsfm: DB "TSFM+MIDI",0
-124+  185A 2B 4D 49 44
-124+  185E 49 00
-125+  1860              str_tsfm_end
-126+  1860
-127+  1860 53 41 41 31  str_saa: DB "SAA1099",0
-127+  1864 30 39 39 00
-128+  1868              str_saa_end
-129+  1868
-130+  1868 47 53 00     str_gs: DB "GS",0
-131+  186B              str_gs_end
-132+  186B
-133+  186B 41 64 76 61  str_menuadv: DB "Advanced...",0
-133+  186F 6E 63 65 64
-133+  1873 2E 2E 2E 00
-134+  1877              str_menuadv_end:
-135+  1877
-136+  1877 53 44 20 69  str_sd_indication: DB "SD indication",0
-136+  187B 6E 64 69 63
-136+  187F 61 74 69 6F
-136+  1883 6E 00
-137+  1885              str_sd_indication_end:
-138+  1885
-139+  1885 42 72 69 67  str_bright_boost: DB "Bright boost",0
-139+  1889 68 74 20 62
-139+  188D 6F 6F 73 74
-139+  1891 00
-140+  1892              str_bright_boost_end:
-141+  1892
-142+  1892 53 61 76 65  str_save_settings: DB "Save settings",0
-142+  1896 20 73 65 74
-142+  189A 74 69 6E 67
-142+  189E 73 00
-143+  18A0              str_save_settings_end:
-144+  18A0
-145+  18A0 45 52 52 4F  str_error: DB "ERROR",0
-145+  18A4 52 00
-146+  18A6              str_error_end:
-147+  18A6
-148+  18A6 20 20 20 20  str_no_error: DB "     ",0
-148+  18AA 20 00
-149+  18AC              str_no_error_end:
-150+  18AC
-151+  18AC 47 6F 20 62  str_back: DB "Go back...",0
-151+  18B0 61 63 6B 2E
-151+  18B4 2E 2E 00
-152+  18B7              str_back_end:
-153+  18B7
-154+  18B7 4E 6F 72 6D  str_normal_boot: DB "Normal boot", 0
-154+  18BB 61 6C 20 62
-154+  18BF 6F 6F 74 00
-155+  18C3              str_normal_boot_end:
-156+  18C3
-157+  18C3 5A 58 38 30  str_zx80: DB "ZX80",0
-157+  18C7 00
-158+  18C8              str_zx80_end:
-159+  18C8
-160+  18C8 5A 58 38 31  str_zx81: DB "ZX81",0
-160+  18CC 00
-161+  18CD              str_zx81_end:
-162+  18CD
-163+  18CD 48 45 20 47  str_negluk: DB "HE GLUK",0
-163+  18D1 4C 55 4B 00
-164+  18D5              str_negluk_end:
-165+  18D5
+121+  184A 49 6E 74 20  str_spk: DB "Int Spk",0
+121+  184E 53 70 6B 00
+122+  1852              str_spk_end
+123+  1852
+124+  1852 54 53 46 4D  str_tsfm: DB "TSFM+MIDI",0
+124+  1856 2B 4D 49 44
+124+  185A 49 00
+125+  185C              str_tsfm_end
+126+  185C
+127+  185C 53 41 41 31  str_saa: DB "SAA1099",0
+127+  1860 30 39 39 00
+128+  1864              str_saa_end
+129+  1864
+130+  1864 47 53 00     str_gs: DB "GS",0
+131+  1867              str_gs_end
+132+  1867
+133+  1867 41 64 76 61  str_menuadv: DB "Advanced...",0
+133+  186B 6E 63 65 64
+133+  186F 2E 2E 2E 00
+134+  1873              str_menuadv_end:
+135+  1873
+136+  1873 53 44 20 69  str_sd_indication: DB "SD indication",0
+136+  1877 6E 64 69 63
+136+  187B 61 74 69 6F
+136+  187F 6E 00
+137+  1881              str_sd_indication_end:
+138+  1881
+139+  1881 42 72 69 67  str_bright_boost: DB "Bright boost",0
+139+  1885 68 74 20 62
+139+  1889 6F 6F 73 74
+139+  188D 00
+140+  188E              str_bright_boost_end:
+141+  188E
+142+  188E 53 61 76 65  str_save_settings: DB "Save settings",0
+142+  1892 20 73 65 74
+142+  1896 74 69 6E 67
+142+  189A 73 00
+143+  189C              str_save_settings_end:
+144+  189C
+145+  189C 45 52 52 4F  str_error: DB "ERROR",0
+145+  18A0 52 00
+146+  18A2              str_error_end:
+147+  18A2
+148+  18A2 20 20 20 20  str_no_error: DB "     ",0
+148+  18A6 20 00
+149+  18A8              str_no_error_end:
+150+  18A8
+151+  18A8 47 6F 20 62  str_back: DB "Go back...",0
+151+  18AC 61 63 6B 2E
+151+  18B0 2E 2E 00
+152+  18B3              str_back_end:
+153+  18B3
+154+  18B3 4E 6F 72 6D  str_normal_boot: DB "Normal boot", 0
+154+  18B7 61 6C 20 62
+154+  18BB 6F 6F 74 00
+155+  18BF              str_normal_boot_end:
+156+  18BF
+157+  18BF 5A 58 38 30  str_zx80: DB "ZX80",0
+157+  18C3 00
+158+  18C4              str_zx80_end:
+159+  18C4
+160+  18C4 5A 58 38 31  str_zx81: DB "ZX81",0
+160+  18C8 00
+161+  18C9              str_zx81_end:
+162+  18C9
+163+  18C9 48 45 20 47  str_negluk: DB "HE GLUK",0
+163+  18CD 4C 55 4B 00
+164+  18D1              str_negluk_end:
+165+  18D1
 # file closed: strings.asm
-717   18D5
-718   18D5                  DISPLAY "Free space: ",/D,#2000-$
-719   18D5                  ASSERT $ < #2000
-720   18D5
-721   18D5
-722   18D5              ; Rewrittable area to save user settings. Flash sector size = 4Kb
-723   18D5                  ORG #2000
+717   18D1
+718   18D1                  DISPLAY "Free space: ",/D,#2000-$
+719   18D1                  ASSERT $ < #2000
+720   18D1
+721   18D1
+722   18D1              ; Rewrittable area to save user settings. Flash sector size = 4Kb
+723   18D1                  ORG #2000
 724   2000              user_config_sector:
 725   2000 00 00 00 00  user_config_initialized: DB 0,0,0,0
 726   2004 00 00 03 00  user_config CFG_T

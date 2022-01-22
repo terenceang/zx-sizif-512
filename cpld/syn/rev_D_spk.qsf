@@ -256,3 +256,4 @@ set_global_assignment -name SYSTEMVERILOG_FILE ../rtl/top.sv
 set_global_assignment -name VERILOG_INCLUDE_FILE ../rtl/util.vh
 set_global_assignment -name SDC_FILE clocks.sdc
 set_global_assignment -name CDF_FILE output/zx_ula.cdf
+set_global_assignment -name CDF_FILE output/Chain2.cdf

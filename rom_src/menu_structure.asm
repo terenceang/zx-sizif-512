@@ -393,7 +393,7 @@ menu_sdind_cb:
     ld c, 1
     call menu_handle_press
     ld (cfg.sdind), a
-    ld bc, #0cff
+    ld bc, #0dff
     out (c), a
     ret
 
@@ -402,7 +402,7 @@ menu_bright_cb:
     ld c, 1
     call menu_handle_press
     ld (cfg.bright), a
-    ld bc, #0dff
+    ld bc, #0eff
     out (c), a
     ret
 

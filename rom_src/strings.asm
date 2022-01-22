@@ -118,7 +118,7 @@ str_dac_sd_end
 str_dac_covoxsd: DB "Covox+SD",0
 str_dac_covoxsd_end
 
-str_spk: DB "Int Speaker",0
+str_spk: DB "Int Spk",0
 str_spk_end
 
 str_tsfm: DB "TSFM+MIDI",0
