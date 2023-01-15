@@ -38,12 +38,14 @@ custom_rom DB 0
 rom48      DB 0
 joystick   DB 0
 ay         DB 1
-sd         DB 2
+sd         DB 1
 ulaplus    DB 1
 dac        DB 3
 spk        DB 1
 sdind      DB 1
 bright     DB BRIGHT_DEFAULT
+autoturbo  DB 0
+zxkit1     DB 0
 ENDIF
     ENDS
 

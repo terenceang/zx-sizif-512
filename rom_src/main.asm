@@ -82,7 +82,7 @@ nmi_handler:
     call check_entering_pause ; A[1] == 1 if pause button is pressed
     bit 1, a                  ; ...
     jp nz, .enter_pause       ; ...
-    call delay_10ms           ; 
+    call delay_10ms           ;
     call check_entering_menu  ; A == 1 if we are entering menu, A == 2 if we are leaving to...
     bit 0, a                  ; ...default nmi handler, A == 0 otherwise
     jp nz, .enter_menu        ; ...
@@ -95,14 +95,14 @@ nmi_handler:
     ld bc, #00ff              ; ...
     in a, (c)                 ; if divmmc paged - just do retn
     bit 3, a                  ; ...
-    jr nz, exit_with_ret      ; ... 
+    jr nz, exit_with_ret      ; ...
     ld hl, #0066              ; otherwise jump to default nmi handler
     jr exit_with_jp           ; ...
 
 .enter_pause:
     ld hl, nmi_pause
     ld (var_main_fun), hl
-    jr .enter  
+    jr .enter
 .enter_menu:
     ld hl, nmi_menu
     ld (var_main_fun), hl
@@ -136,7 +136,7 @@ nmi_handler:
     out (c), a                ; ...
 .leave_without_reboot:
     pop af                    ; A = I
-    push af                   ; 
+    push af                   ;
     call get_im2_handler      ; HL = default im2 handler address
     ld (var_int_vector), hl
     xor a                     ; disable border
@@ -177,7 +177,7 @@ exit_with_ret:
 
 check_initialized:
     ld hl, cfg_initialized     ; if (cfg_initialized == "magic word") Z = 0, else Z = 1
-.check;
+.check:
     ld a, #B1                  ; ...
     cpi                        ; ... hl++
     ret nz                     ; ...
@@ -214,24 +214,22 @@ load_config:
 save_config:
     ld bc, CFG_T+CFGEXT_T ; cfg_saved = cfg
     ld de, cfg_saved      ; ...
-    ld hl, cfg            ; ... 
+    ld hl, cfg            ; ...
     ldir                  ; ...
     ret
 
 
 load_user_config:
     ld hl, user_config_initialized ; check if magic world is written to flash
-    call check_initialized.check   ; if no - do no do anything
+    call check_initialized.check   ; if no - do not do anything
     ret nz                         ; ...
     ld bc, CFG_T                   ; else - cfg_saved = user_config
     ld de, cfg_saved               ; ...
     ld hl, user_config             ; ...
     ldir                           ; ...
 .quirks:                           ; some options shouldn't be saved by user, so we just overwrite them from default config
-    ld a, (CFG_DEFAULT+CFG_T.ay)   ; AY should be disabled only by detect_external_ay
-    ld (cfg_saved+CFG_T.ay), a     ; ...
-    ld a, (CFG_DEFAULT+CFG_T.sd)   ; SD is always autodetected
-    ld (cfg_saved+CFG_T.sd), a     ; ...
+    ld a, (CFG_DEFAULT.ay)         ; AY should be disabled only by detect_external_ay
+    ld (cfg_saved.ay), a           ; ...
     ret
 
 ; OUT -  A = 1 if error, 0 if ok
@@ -284,7 +282,7 @@ init_cpld:
     out (c), a                  ; ...
 .do_load:
     ld b, CFG_T        ; B = registers count
-    ld c, #ff          ; 
+    ld c, #ff          ;
     ld hl, cfg+CFG_T-1 ; HL = &cfg[registers count-1]
     otdr               ; do { b--; out(bc, *hl); hl--; } while(b)
 .do_load_ext:          ; same for extension board
@@ -304,13 +302,12 @@ init_cpld:
 detect_sd_card:
     in a, (#77)                 ; read sd_cd state from ZC status port
     bit 0, a                    ; check sd_cd == 0 (card is insert)
-    jr z, .is_insert            ; yes?
+    ret z                       ; yes?
 .no_card:
+    ld a, (cfg_saved.sd)        ; if (sd == divmmc) sd = OFF
+    cp 1                        ; ...
+    ret nz                      ; ...
     xor a                       ; sd = OFF
-    ld (cfg_saved.sd), a        ; ...
-    ret
-.is_insert:
-    ld a, 1                     ; sd = divmmc
     ld (cfg_saved.sd), a        ; ...
     ret
 
@@ -355,10 +352,10 @@ detect_ext_board:
 ; Check if external AY addon is connected to zx bus
 ; If yes - disable internal AY and TSFM on extension board
 detect_external_ay:
-    ld bc, #08ff    ; disable main AY 
+    ld bc, #08ff    ; disable main AY
     xor a           ; ...
     out (c), a      ; ...
-    ld b, #e1       ; disable extension board's AY 
+    ld b, #e1       ; disable extension board's AY
     out (c), a      ; ...
     ld bc, #fffd    ; set AY register = R6
     ld a, 6         ; ...
@@ -436,7 +433,7 @@ check_entering_pause:
 
 ; OUT -  A = 1 if we are entering menu, A = 2 if we are leaving menu, A = 0 otherwise
 ; OUT -  F - garbage
-check_entering_menu: 
+check_entering_menu:
     xor a                       ; read magic key state in bit 0 of #00FF port
     in a, (#ff)                 ; ...
     bit 0, a                    ; check key is hold
@@ -646,13 +643,27 @@ nmi_pause:
     ld a, (var_exit_flag)
     or a
     jr z, .loop
+.wait_for_pause_key_release:
+    xor a              ; read magic/pause keys state from port #00FF
+    in a, (#ff)        ; ...
+    and #03            ; ...
+    jr nz, .wait_for_pause_key_release
+    ei                 ; second read to fix start button bouncing on 8bitdo gamepad
+    halt               ; ...
+.wait_for_pause_key_release2:
+    xor a              ; read magic/pause keys state from port #00FF
+    in a, (#ff)        ; ...
+    and #03            ; ...
+    jr nz, .wait_for_pause_key_release2
     ret
 
 
 nmi_menu:
-    call check_initialized
-    jr z, .init1
+    call check_initialized     ; cpld and our variables may be not initialized at this point because magic rom was shadowed at start by external peripheral
+    jr z, .init1               ; so we're initialize our variables for properly menu work, but skip cpld initialization as it already initialized itself with safe values
     call init_default_config
+    ld a, 2                    ; default cpld sd card state - ZC
+    ld (cfg_saved.sd), a       ; ...
     call detect_ext_board
     call load_config
     call save_initialized
@@ -723,7 +734,7 @@ wait_for_keys_release:
     ORG #2000
 user_config_sector:
 user_config_initialized: DB 0,0,0,0
-user_config CFG_T 
+user_config CFG_T
 
 
 ; BDI/TR-DOS detection routine. See detect_external_bdi
@@ -746,7 +757,7 @@ var_ram_func:
 
 ; Magic vectors
     ORG #F000
-Exit_vector: 
+Exit_vector:
     ORG #F008
 Readout_vector:
 

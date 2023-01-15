@@ -1,12 +1,19 @@
 // `define REV_C
 // `define REV_D
+// `define REV_E
+
+`ifdef REV_C
+    `define REV_CD
+`elsif REV_D
+    `define REV_CD
+`endif
 
 import common::*;
 module zx_ula (
     input rst_n,
     input clk28,
 
-    output n_rstcpu,
+    inout n_rstcpu,
     output clkcpu,
     output n_clkcpu,
 
@@ -29,11 +36,6 @@ module zx_ula (
     output n_int,
     output n_nmi,
 
-    input [4:0] kd,
-    input tape_in,
-
-    input n_magic,
-
     output [1:0] r,
     output [1:0] g,
     output [1:0] b,
@@ -50,12 +52,22 @@ module zx_ula (
     output snd_l,
     output snd_r,
 
+    input [4:0] kd,
+    input n_magic,
+
+`ifdef REV_CD
+    input tape_in,
     input n_joy_down,
     input n_joy_right,
     input n_joy_left,
     input n_joy_up,
     input n_joy_b1,
     input n_joy_b2,
+`else
+    input shift_out,
+    output shift_clk,
+    output shift_pl,
+`endif
     output joy_sel,
 
     input sd_cd,
@@ -89,9 +101,11 @@ wire magic_reboot, magic_beeper;
 wire up_active;
 wire clkwait;
 wire [2:0] rampage128;
+wire ay_wait;
 wire div_wait;
 wire sd_indication;
 wire bright_boost;
+wire zxkit1;
 
 
 /* CPU BUS */
@@ -112,21 +126,34 @@ assign bus.ioreq = ~(~n_m1 | n_iorqge | n_iorqge_delayed);
 
 /* RESET */
 reg rst_n0 = 0;
-reg [2:0] rst_n0_cnt = 0;
+reg [2:0] rst_n0_cnt = 3'b111;
 always @(posedge clk28) begin
-    if (rst_n == 1'b0) begin
-        if (! (&rst_n0_cnt))
-            rst_n0_cnt <= rst_n0_cnt + 1'b1;
-    end
-    else begin
+    if (rst_n == 1'b1)
         rst_n0_cnt <= 0;
-    end
+    else if (! (&rst_n0_cnt))
+        rst_n0_cnt <= rst_n0_cnt + 1'b1;
     rst_n0 <= (&rst_n0_cnt)? 1'b0 : 1'b1;
 end
 
 reg usrrst_n = 0;
 always @(posedge clk28) begin
     usrrst_n <= (&rst_n0_cnt || ps2_key_reset || magic_reboot)? 1'b0 : 1'b1;
+end
+
+reg n_rstcpu_in = 0;
+reg [2:0] n_rstcpu_in_cnt = 3'b111;
+always @(posedge clk28 or negedge usrrst_n) begin
+    if (usrrst_n == 1'b0) begin
+        n_rstcpu_in_cnt <= 3'b111;
+        n_rstcpu_in <= 0;
+    end
+    else begin
+        if (n_rstcpu == 1'b1)
+            n_rstcpu_in_cnt <= 0;
+        else if (! (&n_rstcpu_in_cnt))
+            n_rstcpu_in_cnt <= n_rstcpu_in_cnt + 1'b1;
+        n_rstcpu_in <= (&n_rstcpu_in_cnt)? 1'b0 : 1'b1;
+    end
 end
 
 
@@ -143,6 +170,9 @@ wire [8:0] vc, hc;
 wire [4:0] blink_cnt;
 wire blink, even_line;
 wire clk14, clk7, clk35, ck14, ck7, ck35;
+wire vsync0, hsync0;
+assign vsync = zxkit1? clk14 : vsync0;
+assign hsync = zxkit1? csync : hsync0;
 screen screen0(
     .rst_n(usrrst_n),
     .clk28(clk28),
@@ -155,8 +185,8 @@ screen screen0(
     .g(g0),
     .b(b0),
     .csync(csync),
-    .vsync(vsync),
-    .hsync(hsync),
+    .vsync(vsync0),
+    .hsync(hsync0),
 
     .fetch_allow((!up_write_req && !bus.mreq) || bus.rfsh || (clkwait && turbo == TURBO_NONE)),
     .fetch(screen_fetch),
@@ -226,6 +256,24 @@ assign {ps2_joy_up, ps2_joy_down, ps2_joy_left, ps2_joy_right, ps2_joy_fire} = 0
 `endif
 
 
+/* SHIFT REGISTER */
+`ifndef REV_CD
+wire [7:0] shift_d;
+wire tape_in = shift_d[3], n_joy_down = shift_d[5], n_joy_right = shift_d[7], n_joy_left = shift_d[6], n_joy_up = shift_d[2], n_joy_b1 = shift_d[4], n_joy_b2 = shift_d[0];
+wire shift_sync;
+shiftreg165 #(.DEFAULT_STATE(1'b1)) shiftreg165_0(
+    .rst_n(rst_n0),
+    .clk(clk28),
+    .clk_en(ck7),
+    .sync(shift_sync),
+    .q(~shift_out),
+    .cp(shift_clk),
+    .pl(shift_pl),
+    .d(shift_d)
+);
+`endif
+
+
 /* JOYSTICK / GAMEPAD */
 wire joy_up, joy_down, joy_left, joy_right, joy_b1_turbo, joy_b2_turbo, joy_b3_turbo, joy_mode;
 joysega joysega0(
@@ -235,6 +283,9 @@ joysega joysega0(
     .vc(vc),
     .hc(hc),
     .turbo_strobe(blink_cnt[1]),
+`ifndef REV_CD
+    .sync_strobe(shift_sync),
+`endif
 
     .n_joy_up(n_joy_up),
     .n_joy_down(n_joy_down),
@@ -255,14 +306,14 @@ joysega joysega0(
     .joy_mode(joy_mode)
 );
 
-wire [7:0] kempston_data = {1'b0, joy_b3_turbo, joy_b2_turbo, ps2_joy_fire | joy_b1_turbo, 
+wire [7:0] kempston_data = {1'b0, joy_b3_turbo, joy_b2_turbo, ps2_joy_fire | joy_b1_turbo,
     ps2_joy_up | joy_up, ps2_joy_down | joy_down, ps2_joy_left | joy_left, ps2_joy_right | joy_right};
 
 
 /* CPU CONTROLLER */
 wire n_int_next, clkcpu_ck, snow;
-wire n_rstcpu0;
-assign n_rstcpu = n_rstcpu0? 1'bz : 1'b0;
+wire n_rstcpu_out;
+assign n_rstcpu = n_rstcpu_out? 1'bz : 1'b0;
 assign n_clkcpu = ~clkcpu;
 cpucontrol cpucontrol0(
     .rst_n(usrrst_n),
@@ -281,9 +332,10 @@ cpucontrol cpucontrol0(
     .machine(machine),
     .screen_contention(screen_contention),
     .turbo(turbo),
-    .ext_wait_cycle(div_wait),
+    .ext_wait_cycle1(ay_wait || div_wait),
+    .ext_wait_cycle2(ay_wait),
 
-    .n_rstcpu(n_rstcpu0),
+    .n_rstcpu_out(n_rstcpu_out),
     .clkcpu(clkcpu),
     .clkcpu_ck(clkcpu_ck),
     .clkwait(clkwait),
@@ -301,7 +353,8 @@ always @(posedge clk28)    // precharge to 1 - this is required because of weak 
 assign n_nmi = n_nmi0? (n_nmi0_prev? 1'bz : 1'b1) : 1'b0;
 
 wire rom_wren;
-wire div_automap;
+wire div_map;
+wire div_mapram;
 wire [7:0] magic_dout;
 wire magic_dout_active;
 wire magic_mode, magic_map;
@@ -319,8 +372,9 @@ wire divmmc_en, zc_en, sd_indication_en;
 assign sd_indication = sd_indication_en & ~sd_cs;
 
 magic magic0(
-    .rst_n(n_rstcpu0),
+    .rst_n(n_rstcpu_in),
     .clk28(clk28),
+    .ck35(ck35),
 
     .bus(bus),
     .d_out(magic_dout),
@@ -332,7 +386,7 @@ magic magic0(
 
     .magic_button(~n_magic || joy_mode || ps2_key_magic),
     .pause_button(ps2_key_pause || joy_start),
-    .div_automap(div_automap),
+    .div_paged(div_map && !div_mapram),
 
     .magic_mode(magic_mode),
     .magic_map(magic_map),
@@ -356,7 +410,8 @@ magic magic0(
     .soundrive_en(soundrive_en),
     .spk(spk),
     .sd_indication_en(sd_indication_en),
-    .bright_boost(bright_boost)
+    .bright_boost(bright_boost),
+    .zxkit1(zxkit1)
 );
 
 
@@ -372,7 +427,7 @@ wire [4:0] port_dffd;
 wire plus3_mtr0;
 assign plus3_mtr = plus3_mtr0? 1'bz : 1'b0;
 ports ports0 (
-    .rst_n(n_rstcpu0),
+    .rst_n(n_rstcpu_in),
     .clk28(clk28),
 
     .bus(bus),
@@ -409,7 +464,7 @@ ports ports0 (
 /* AY */
 wire ay_dout_active;
 ay ay0(
-    .rst_n(usrrst_n),
+    .rst_n(n_rstcpu_in),
     .clk28(clk28),
     .en(ay_en),
     .bus(bus),
@@ -417,14 +472,15 @@ ay ay0(
     .ay_clk(ay_clk),
     .ay_bc1(ay_bc1),
     .ay_bdir(ay_bdir),
-    .d_out_active(ay_dout_active)
+    .d_out_active(ay_dout_active),
+    .cpuwait(ay_wait)
 );
 
 
 /* COVOX & SOUNDRIVE */
 wire [7:0] soundrive_l0, soundrive_l1, soundrive_r0, soundrive_r1;
 soundrive soundrive0(
-    .rst_n(usrrst_n),
+    .rst_n(n_rstcpu_in),
     .clk28(clk28),
     .en_covox(covox_en),
     .en_soundrive(soundrive_en),
@@ -457,11 +513,11 @@ mixer mixer0(
 
 
 /* DIVMMC */
-wire div_map, div_ram, div_ramwr_mask, div_dout_active;
+wire div_ram, div_ramwr_mask, div_dout_active;
 wire [7:0] div_dout;
 wire [3:0] div_page;
 divmmc divmmc0(
-    .rst_n(n_rstcpu0),
+    .rst_n(n_rstcpu_in),
     .clk28(clk28),
     .ck14(ck14),
     .ck7(ck7),
@@ -478,14 +534,14 @@ divmmc divmmc0(
     .sd_mosi(sd_mosi),
     .sd_sck(sd_sck),
     .sd_cs(sd_cs),
-    
+
     .rammap(port_dffd[4] | port_1ffd[0]),
     .magic_mode(magic_mode),
     .magic_map(magic_map),
 
     .page(div_page),
     .map(div_map),
-    .automap(div_automap),
+    .mapram(div_mapram),
     .ram(div_ram),
     .ramwr_mask(div_ramwr_mask),
     .cpuwait(div_wait)
@@ -497,7 +553,7 @@ wire up_dout_active;
 wire [7:0] up_dout;
 wire [5:0] up_write_addr;
 ulaplus ulaplus0(
-    .rst_n(n_rstcpu0),
+    .rst_n(n_rstcpu_in),
     .clk28(clk28),
     .en(up_en),
 

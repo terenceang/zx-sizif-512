@@ -29,12 +29,12 @@ With extension board ([link](https://github.com/UzixLS/zx-sizif-512-ext)) more f
 * MIDI sound
 
 ### Demonstration
-Running Pentagon and Spectrum 128 demos: [link](https://www.youtube.com/watch?v=_RoLKcfJSTY)  
-Playing music from SD: [link](https://www.youtube.com/watch?v=TmikKD3yqOU)  
+Running Pentagon and Spectrum 128 demos: [link](https://www.youtube.com/watch?v=_RoLKcfJSTY)
+Playing music from SD: [link](https://www.youtube.com/watch?v=TmikKD3yqOU)
 Some random photos: [link](https://cloud.err200.net/index.php/s/73TR85tYZkMm8Ax?path=%2Fsizif-512)
 
-Review by Martin's 8-bit blog (in czech): [link](https://www.8bity.cz/2020/zx-spectrum-clone-with-cpld-ulaplus-sizif-512/#)  
-Review by The Retro Shack youtube channel: [link](https://www.youtube.com/watch?v=l5IgQTgq_bg)  
+Review by Martin's 8-bit blog (in czech): [link](https://www.8bity.cz/2020/zx-spectrum-clone-with-cpld-ulaplus-sizif-512/#)
+Review by The Retro Shack youtube channel: [link](https://www.youtube.com/watch?v=l5IgQTgq_bg)
 Building from scratch experience in Terence Ang's blog: [part1](https://www.terenceang.com/2021/08/28/building-a-zx-spectrum-clone-in-2021-begining/) [part2](https://www.terenceang.com/2021/08/29/building-a-zx-spectrum-clone-in-2021-sourcing-for-parts/) [part3](https://www.terenceang.com/2021/08/31/building-a-zx-spectrum-clone-in-2021-populating-the-board/)
 
 ### Magic button
@@ -66,8 +66,10 @@ Sega gamepad support will be available starting from PCB rev.D (or Rev.C with sl
 ### PS/2 keyboard buttons
 | Button | Function |
 | - | - |
+| F1 | Pause |
 | F5 | Magic button |
-| F12 | Pause |
+| F10 | Reboot |
+| F12 | Reboot |
 | Ctrl+Alt+Del | Reboot |
 | Ctrl+Alt+Backspace | Reboot |
 | Numpad 8, 2/5, 4, 6 | Joystick's up-down-left-right |
@@ -95,6 +97,10 @@ Sizif have preinstalled esxDOS firmware, which provides ability to load TAP, TRD
 * DivIDE 5.7d - OK (if SD card isn't insert)
 * DMA 2.02 by ShamaZX - OK
 * [Kempston + TurboSound interface](https://github.com/konkotgit/KTS) - OK
+* [ZX-HD](https://www.bytedelight.com/?page_id=1800) - OK
+* [ZX-VGA-JOY](http://zx-vga-joy.com/) - OK
+* [Spectranet by ByteDelight](https://www.bytedelight.com/?page_id=3515) - OK
+* Spectranet by ShamaZX (aka ZX Net 512) - OK
 
 ### Changelog & current status
 * Rev.A - first release. Please note the [errata](pcb/rev.A/ERRATA.ru.txt) (in russian).
@@ -109,7 +115,24 @@ Sizif have preinstalled esxDOS firmware, which provides ability to load TAP, TRD
     * added Bluetooth tape input (via M18 module)
     * added alternative microSD card socket footprint
     * fixed compatibility with some keyboards
+    * modified tape input circuit
 * Rev.D1: minor changes in pcb layout
+* Rev.E:
+    * added fuse on power input
+    * added protection diode on 5V power rail
+    * rotated left keyboard connector by 180 degrees
+    * replaced TRS audio connectors by TRRS with video output
+    * changed C37,C38,C39 footprint to able to install film capacitors
+    * improved compatibility with wireless sega gamepads - 3.3V power replaced by 5V
+    * added ability to simultaneously install the power/reset keys together with the connectors
+    * added jumper for wiring minidin-9 pin 4 with composite or sync output for compatibility with dirty scart cables
+    * added ability to install full-height 4.43MHz crystal
+    * all 0.5/0.3 vias replaced by 0.6/0.3
+    * experimental: 74HCU04-based speaker amplifier replaced by LM386-based
+    * experimental: 74HCU04-based tape input circuit replaced by LM311-based
+    * experimental: 74HCU04-based crystal clock generator replaced by ICS501-based
+* Rev.E1:
+    * reverted experimental rev.E changes
 
 ### Acknowledgments
 This work is inspired and based on a lot of other projects and would hardly have been successful without them:
